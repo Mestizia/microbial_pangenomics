@@ -38,6 +38,9 @@ def condense_annotation(annot_dict):
         annot = get_consensus_annot(hit_count)
         #best_hit = hit_count.loc[hit_count.index[0]]
         gc_annotation[gc] = annot
+        if annot == ['no consensus']:
+            print (hit_count)
+            print (sum(hit_count))
     return gc_annotation
 
 
@@ -50,11 +53,11 @@ def get_consensus_annot(hit_count):
                 hits.append(hit_count.index[x])
         return hits
     else:
-        if hit_count.iloc[0] / tot_annot > 0.3:
+        if hit_count.iloc[0] / tot_annot > 0.2:
             hits = [hit_count.index[0]]
             #if at least 30% of hits are the same, check if there are other similar hits
             for x in range(1, len(hit_count)):
-                if hit_count.iloc[x] / tot_annot > 0.3:
+                if hit_count.iloc[x] / tot_annot > 0.2:
                     hits.append(hit_count.index[x])
                     #if another hit is at least 30% of total hits, return also that. stop if not
                 else:
@@ -62,21 +65,40 @@ def get_consensus_annot(hit_count):
     return ['no consensus']
 
 if __name__ == "__main__":
-    table_file = '/DATA_RAID2/vtracann/shared/db/isolates/anvio/filtered_panpangenome/gene_clusters_pfam_hits.tsv'
+    table_file = '/DATA_RAID2/vtracann/shared/db/isolates/anvio/filtered_panpangenome/gene_clusters_pfam_hits35.tsv'
     annot_dict = parse_table(table_file)
-
+    table_file2 = '/DATA_RAID2/vtracann/shared/db/isolates/anvio/filtered_panpangenome/gene_clusters_pfam_hits35_2.tsv'
+    annot_dict2 = parse_table(table_file2)
 
     gc_annotation = condense_annotation(annot_dict)
-    if not os.path.isfile('/DATA_RAID2/vtracann/shared/db/isolates/anvio/filtered_panpangenome/gene_clusters_pfam_hits_condensed.tsv'):
+    gc_annotation2 = condense_annotation(annot_dict2)
+
+    #print (annot_dict['gene_cluster:GC_00007329'])
+    #count the occurrences of every element in the list
+    #hit_count = pd.Series(annot_dict['gene_cluster:GC_00007329']).value_counts()
+    #print (hit_count)
+    #print (len(annot_dict['gene_cluster:GC_00007329']))
+    #print (annot_dict['gene_cluster:GC_00027313'])
+    #print (len(annot_dict['gene_cluster:GC_00027313']))
+    #hit_count = pd.Series(annot_dict['gene_cluster:GC_00027313']).value_counts()
+    # print (hit_count)
+
+    #print (annot_dict['gene_cluster:GC_00007329'])
+    print (gc_annotation['gene_cluster:GC_00007329'])
+    print (pd.Series(annot_dict['gene_cluster:GC_00007329']).value_counts())
+    print (len(annot_dict['gene_cluster:GC_00007329']))
+
+
+    if not os.path.isfile('a'):
 
         out_txt = ''
         for annot in gc_annotation.keys():
             out_txt += annot + '\t' + '\t'.join(gc_annotation[annot]) + '\n'
+        for annot in gc_annotation2.keys():
+            out_txt += annot + '\t' + '\t'.join(gc_annotation2[annot]) + '\n'
 
-        outfile = '/DATA_RAID2/vtracann/shared/db/isolates/anvio/filtered_panpangenome/gene_clusters_pfam_hits_condensed.tsv'
+        outfile = '/DATA_RAID2/vtracann/shared/db/isolates/anvio/filtered_panpangenome/gene_clusters_pfam_hits35_condensed.tsv'
+        
         with open(outfile, 'w') as f:
             f.write(out_txt)
     
-
-    evaluate_pairs(gc_annotation, annot_dict)
-
