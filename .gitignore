@@ -1,0 +1,5 @@
+
+*.annotations
+accessory_data/presence_absence.tsv
+plotting_and_tables/cazyme_per_genome.tsv
+plotting_and_tables/cazymes_norm2_df.tsv
